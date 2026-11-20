@@ -1,4 +1,5 @@
-# The installer appends the sandbox settings from hardening.sh to the end of this file,
+# The installer appends the sandbox settings from hardening.sh and then the Install
+# section to this file (the sandbox must stay inside the Service section),
 # and generates tg-core.service.d/sockets.conf with one socket per configured client.
 [Unit]
 Description=Telegram core (read-only, single session for all clients)
@@ -15,6 +16,3 @@ LoadCredentialEncrypted=vault-key:/etc/tg-mcp/vault-key.cred
 Restart=always
 RestartSec=10
 TimeoutStopSec=30
-
-[Install]
-WantedBy=multi-user.target

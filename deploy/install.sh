@@ -137,6 +137,7 @@ systemctl stop tg-mcp.service 2>/dev/null || true
 {
     cat "$SOURCE/deploy/tg-core.service"
     sed -n 's/^-p //p' "$SOURCE/deploy/hardening.sh" | grep -v '^RequiresMountsFor='
+    printf '\n[Install]\nWantedBy=multi-user.target\n'
 } >/etc/systemd/system/tg-core.service
 
 # Public endpoint: the same sandbox without any IP networking, writing only its own state.
@@ -171,6 +172,23 @@ done
 rm -rf "$GENERATED"
 
 systemctl daemon-reload
+
+# Refuse to start without the sandbox: systemd silently ignores a misplaced setting.
+sandbox_broken() {
+    echo "$1: $2. Not starting it without the sandbox." >&2
+    exit 1
+}
+for unit in tg-core.service tg-mcp.service; do
+    if systemd-analyze verify "/etc/systemd/system/$unit" 2>&1 | grep 'Unknown key' >&2; then
+        sandbox_broken "$unit" "sandbox settings are in the wrong section"
+    fi
+    for setting in NoNewPrivileges=yes ProtectSystem=strict MemoryDenyWriteExecute=yes; do
+        [[ "$(systemctl show -p "${setting%%=*}" --value "$unit")" == "${setting#*=}" ]] ||
+            sandbox_broken "$unit" "$setting is not in effect"
+    done
+done
+[[ -n "$(systemctl show -p IPAddressAllow --value tg-core.service)" ]] ||
+    sandbox_broken tg-core.service "the Telegram-only network rule is not in effect"
 systemctl enable --now "$MOUNT_UNIT"
 # Sockets are recreated with the core stopped, so it never keeps stale ones.
 systemctl stop tg-core.service 2>/dev/null || true
