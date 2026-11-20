@@ -1,0 +1,13 @@
+#!/bin/sh
+# Interactive Telegram login inside the sandbox. Run as root over SSH.
+# The core is stopped meanwhile, so only one connection ever uses the session.
+set -eu
+. /usr/local/lib/tg-mcp/hardening.sh
+systemctl stop tg-core.service
+# shellcheck disable=SC2086
+/usr/bin/systemd-run --quiet --pty --wait --collect \
+    --unit=tg-mcp-login --service-type=exec --uid=tgmcp --gid=tgmcp \
+    $TG_MCP_HARDENING \
+    -p LoadCredentialEncrypted=vault-key:/etc/tg-mcp/vault-key.cred \
+    /opt/tg-mcp/venv/bin/python -I -B -m tg_mcp.login
+systemctl start tg-core.service

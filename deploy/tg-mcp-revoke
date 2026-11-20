@@ -1,0 +1,7 @@
+#!/bin/sh
+# Disconnects Claude immediately. Reconnecting requires a new pairing code.
+set -eu
+systemctl stop tg-mcp.service
+rm -f /var/lib/tg-mcp-web/oauth.json /var/lib/tg-mcp-web/pairing.json
+systemctl restart tg-mcp.socket
+echo "Claude отключён, все токены и коды подключения удалены."

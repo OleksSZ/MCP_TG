@@ -1,0 +1,55 @@
+# Telegram core settings. Owned by root, so no client can change them.
+# Bots and Telegram service chats are always blocked and cannot be enabled here.
+# After editing: ./deploy/install.sh HOST (regenerates sockets) or systemctl restart tg-core
+public_url = "__PUBLIC_URL__"
+
+# Global rules, applied before any client's rules. Empty allowed list means all chats.
+allowed_chat_ids = []
+denied_chat_ids = []
+block_saved_messages = true
+
+max_range_days = 92
+max_export_messages = 20000
+max_image_mb = 3
+max_file_mb = 100
+max_export_mb = 500
+export_retention_hours = 24
+# Shared by all clients together: protects the account from too many requests.
+max_calls_per_minute = 120
+max_messages_per_hour = 50000
+
+# Live events are kept in RAM only.
+event_retention_hours = 24
+max_buffered_events = 100000
+
+# Each project gets its own socket: /run/tg-core/<name>/core.sock
+# A block grants rights; which chats to listen to is chosen by the project's script.
+#   events = true            may subscribe to new messages, edits, deletions
+#   read = true              may read history (also needed to fill in after downtime)
+#   media / export = true    images / exports to the server
+#   search = true            search across all chats, contact cards, phone lookup
+#   chats = [...]            optional: limit the project to these chat ids
+# Bots, Telegram service chats, Saved Messages and denied_chat_ids are closed to everyone.
+# Adding a block needs ./deploy/install.sh; changing one needs systemctl restart tg-core.
+
+[clients.claude]
+read = true
+media = true
+export = true
+socket_user = "tgmcp-web"
+socket_group = "tgmcp-web"
+
+# Docker project. Mount the directory, not the file:
+#   volumes: ["/run/tg-core/parser:/run/tg-core"]
+# The container's user must match socket_user (root, unless the image sets USER).
+[clients.parser]
+events = true
+read = true
+search = true
+
+# Project running directly on the server as user "monitor".
+[clients.monitor]
+events = true
+read = true
+socket_user = "monitor"
+socket_group = "monitor"

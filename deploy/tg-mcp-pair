@@ -1,0 +1,5 @@
+#!/bin/sh
+# Creates a one-time code for connecting Claude. Run as root over SSH.
+set -eu
+cd /
+exec runuser -u tgmcp-web -- /opt/tg-mcp/venv/bin/python -I -B -m tg_mcp.pairing

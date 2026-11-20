@@ -1,0 +1,12 @@
+# Public MCP endpoint for Claude. No Telegram session and no network: it reaches the
+# core only through /run/tg-core/claude/core.sock. The installer appends the sandbox.
+[Unit]
+Description=Telegram MCP endpoint for Claude (read-only)
+Requires=tg-mcp.socket
+
+[Service]
+User=tgmcp-web
+Group=tgmcp-web
+ExecStart=/opt/tg-mcp/venv/bin/python -I -B -m tg_mcp.server
+Restart=on-failure
+RestartSec=5

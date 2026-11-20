@@ -1,0 +1,14 @@
+[project]
+name = "tg-mcp"
+version = "0.1.0"
+description = "Read-only, sandboxed Telegram export server for MCP"
+requires-python = ">=3.12"
+dependencies = [
+    "telethon==1.45.0",
+    "mcp==2.3.0",
+    "cryptography==50.0.2",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

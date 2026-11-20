@@ -1,0 +1,49 @@
+# Sandbox for the Telegram core and tg-mcp-login. The installer derives the web endpoint's
+# sandbox from it by removing all network access except local sockets.
+# Keep one "-p Name=value" per line with no spaces in values: tg-mcp-login relies on word splitting.
+# Telegram address ranges: https://core.telegram.org/resources/cidr.txt (IPv4 only).
+TG_MCP_HARDENING="
+-p NoNewPrivileges=yes
+-p CapabilityBoundingSet=
+-p AmbientCapabilities=
+-p ProtectSystem=strict
+-p ProtectHome=yes
+-p PrivateTmp=yes
+-p PrivateDevices=yes
+-p ProtectKernelTunables=yes
+-p ProtectKernelModules=yes
+-p ProtectKernelLogs=yes
+-p ProtectControlGroups=yes
+-p ProtectClock=yes
+-p ProtectHostname=yes
+-p ProtectProc=invisible
+-p ProcSubset=pid
+-p RestrictNamespaces=yes
+-p RestrictRealtime=yes
+-p RestrictSUIDSGID=yes
+-p LockPersonality=yes
+-p MemoryDenyWriteExecute=yes
+-p SystemCallArchitectures=native
+-p SystemCallFilter=@system-service
+-p SystemCallFilter=~@privileged
+-p SystemCallFilter=~@resources
+-p RestrictAddressFamilies=AF_INET
+-p RestrictAddressFamilies=AF_UNIX
+-p IPAddressDeny=any
+-p IPAddressAllow=91.108.4.0/22
+-p IPAddressAllow=91.108.8.0/22
+-p IPAddressAllow=91.108.12.0/22
+-p IPAddressAllow=91.108.16.0/22
+-p IPAddressAllow=91.108.20.0/22
+-p IPAddressAllow=91.108.56.0/22
+-p IPAddressAllow=91.105.192.0/23
+-p IPAddressAllow=149.154.160.0/20
+-p IPAddressAllow=185.76.151.0/24
+-p UMask=0027
+-p LimitCORE=0
+-p MemorySwapMax=0
+-p MemoryMax=1G
+-p TasksMax=32
+-p ReadWritePaths=/var/lib/tg-mcp
+-p RequiresMountsFor=/var/lib/tg-mcp/exports
+"

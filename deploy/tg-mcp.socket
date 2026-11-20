@@ -1,0 +1,11 @@
+[Unit]
+Description=Telegram MCP socket, reachable only by the reverse proxy
+
+[Socket]
+ListenStream=/run/tg-mcp.sock
+SocketUser=caddy
+SocketGroup=caddy
+SocketMode=0600
+
+[Install]
+WantedBy=sockets.target

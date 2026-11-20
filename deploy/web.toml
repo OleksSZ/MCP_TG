@@ -1,0 +1,5 @@
+# Settings of the public MCP endpoint for Claude. Owned by root.
+public_url = "__PUBLIC_URL__"
+core_socket = "/run/tg-core/claude/core.sock"
+# After this many days Claude must be reconnected with a new pairing code.
+session_days = 30
